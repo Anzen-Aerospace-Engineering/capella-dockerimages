@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG and contributors
+# SPDX-License-Identifier: Apache-2.0
+
+variables:
+  CAPELLA_DOCKER_IMAGES_REVISION: main
+
+update_capella_diagram_cache:
+  image:
+    name: $DOCKER_REGISTRY/capella/base:${CAPELLA_DOCKER_IMAGES_TAG}
+    entrypoint: [""]
+  script:
+    - pip install "capellambse[cli]@git+https://github.com/DSD-DBS/py-capellambse.git@${CAPELLAMBSE_REVISION}"
+    - mkdir diagram_cache
+    - xvfb-run python -m capellambse.diagram_cache
+        --model "${ENTRYPOINT}"
+        --output ./diagram_cache
+        --index
+        --exe "/opt/capella/capella"
+    - |
+      if [[ "${PUSH_DIAGRAM_CACHE}" == "false" ]]; then
+        exit 0
+      fi
+      DERIVED_BRANCH_NAME="diagram-cache/${CI_COMMIT_REF_NAME}"
+      git switch --orphan "${DERIVED_BRANCH_NAME}"
+      git add diagram_cache
+      git commit -m "${COMMIT_MSG} for ${CI_COMMIT_SHORT_SHA}"
+      git push -o ci.skip --set-upstream origin ${DERIVED_BRANCH_NAME} --force
+  artifacts:
+    paths:
+      - "diagram_cache"
+  variables:
+    # Virtual display used to run Capella in the background.
+    # Do not modify the value!
+    DISPLAY: ":99"
+
+    # Docker tag, which is used for the capella/base image.
+    # Defaults to ${CAPELLA_VERSION}-${CAPELLA_DOCKER_IMAGES_REVISION} if not defined
+    CAPELLA_DOCKER_IMAGES_TAG: ${CAPELLA_VERSION}-${CAPELLA_DOCKER_IMAGES_REVISION}
+
+    # Whether to push the diagram cache changes or not
+    # Defaults to false if not defined
+    PUSH_DIAGRAM_CACHE: "false"
+
+    # The commit message used for updating the diagram cache
+    # Defaults to "chore: Update diagram cache" if not defined
+    COMMIT_MSG: "chore: Update diagram cache"
+
+    # The revision of the py-capellambse package to install
+    # Defaults to "master" if not defined
+    CAPELLAMBSE_REVISION: "master"
+
+    # Relative entrypoint to .aird file inside repository (starting from the root of the repository).
+    # Example: test/test.aird
+    # ENTRYPOINT: ${ENTRYPOINT}
+
+    # Semantic Capella version (x.x.x) >= 5.0.0
+    # Defaults to 6.0.0 if not defined
+    # CAPELLA_VERSION: 6.0.0
