@@ -1,8 +1,0 @@
-# Use this file to define custom dependencies for your Jupyter workspace.
-# The format of the requirements file is described at
-#    https://pip.pypa.io/en/stable/reference/requirements-file-format/
-
-# numpy
-# pandas
-capellambse[cli,decl,png,httpfiles]
-capellambse-context-diagrams
