@@ -160,6 +160,11 @@ ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-$BUILD_ARCHIT
 RUN chmod +x /tini
 
 COPY startup.sh /startup.sh
+
+COPY workspace.zip /home/techuser/
+RUN unzip /home/techuser/workspace.zip -d /home/techuser/ && \
+    chmod -R 777 /home/techuser/workspace
+
 ENTRYPOINT [ "/tini", "--", "/startup.sh" ]
 
 ENV BASE_TYPE=capella
