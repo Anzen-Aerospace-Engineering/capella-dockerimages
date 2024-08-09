@@ -165,6 +165,9 @@ COPY workspace.zip /home/techuser/
 RUN unzip /home/techuser/workspace.zip -d /home/techuser/ && \
     chmod -R 777 /home/techuser/workspace
 
+COPY ATICA_MBSA.zip /opt/capella/dropins/
+RUN unzip /opt/capella/dropins/ATICA_MBSA.zip -d /opt/capella/dropins/
+
 ENTRYPOINT [ "/tini", "--", "/startup.sh" ]
 
 ENV BASE_TYPE=capella
