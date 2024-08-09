@@ -161,6 +161,9 @@ RUN chmod +x /tini
 
 COPY startup.sh /startup.sh
 
+COPY splash.bmp /opt/capella/configuration/org.eclipse.equinox.launcher/org.polarsys.capella.core.platform.sirius.ui.perspective_6.0.0.202209090800/splash.bmp
+RUN chmod 644 /opt/capella/configuration/org.eclipse.equinox.launcher/org.polarsys.capella.core.platform.sirius.ui.perspective_6.0.0.202209090800/splash.bmp
+
 COPY workspace.zip /home/techuser/
 RUN unzip /home/techuser/workspace.zip -d /home/techuser/ && \
     chmod -R 777 /home/techuser/workspace
